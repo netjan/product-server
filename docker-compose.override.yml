@@ -1,8 +1,30 @@
-version: '3'
+version: "3.4"
 
+networks:
+  backend:
+    external: true
+    name: "backend"
+  frontend:
+    external: true
+    name: "frontend"
+
+# Development environment override
 services:
-###> doctrine/doctrine-bundle ###
-  database:
-    ports:
-      - "5432"
-###< doctrine/doctrine-bundle ###
+  php:
+    build:
+      target: app_php_dev
+    volumes:
+      - ./:/var/www/html
+    networks:
+      - backend
+    environment:
+      # See https://xdebug.org/docs/all_settings#mode 
+      XDEBUG_MODE: "${XDEBUG_MODE:-off}"
+      # See https://xdebug.org/docs/all_settings#XDEBUG_CONFIG
+      XDEBUG_CONFIG: "${XDEBUG_CONFIG:-}"
+
+  web:
+    volumes:
+      - ./:/var/www/html
+    networks:
+      - frontend
