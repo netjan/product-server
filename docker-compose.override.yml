@@ -17,6 +17,7 @@ services:
       - ./:/var/www/html
     networks:
       - backend
+      - frontend
     environment:
       # See https://xdebug.org/docs/all_settings#mode 
       XDEBUG_MODE: "${XDEBUG_MODE:-off}"
