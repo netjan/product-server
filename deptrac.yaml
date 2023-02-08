@@ -11,20 +11,37 @@ parameters:
                     type: className
                     regex: .*Controller.*
         -
+            name: Entity
+            collectors:
+                -
+                    type: className
+                    regex: ^App\\Entity\\
+        -
             name: Repository
             collectors:
                 -
                     type: className
                     regex: .*Repository.*
-        -
-            name: Service
+        - 
+            name: Vendors
             collectors:
-                -
+                - 
                     type: className
-                    regex: .*Service.*
+                    regex: ^ApiPlatform\\
+                - 
+                    type: className
+                    regex: ^Doctrine\\ORM\\
+                - 
+                    type: className
+                    regex: ^Doctrine\\Persistence\\
+
+                    
+
     ruleset:
         Controller:
-            - Service
-        Service:
+        Entity:
             - Repository
+            - Vendors
         Repository:
+            - Entity
+            - Vendors
