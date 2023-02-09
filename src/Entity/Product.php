@@ -2,12 +2,36 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use App\Filter\AmountFilter;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
-#[ApiResource]
+#[ApiResource(operations: [
+    new Delete(
+        requirements: ['id' => '\d+'],
+    ),
+    new Get(
+        requirements: ['id' => '\d+'],
+    ),
+    new GetCollection(),
+    new Patch(
+        requirements: ['id' => '\d+'],
+    ),
+    new Post(),
+    new Put(
+        requirements: ['id' => '\d+'],
+    ),
+])]
+#[ApiFilter(AmountFilter::class, properties: ['amount'])]
 class Product
 {
     #[ORM\Id]
