@@ -10,7 +10,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
-use App\Filter\AmountFilter;
+use App\Filter\StockFilter;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -31,7 +31,7 @@ use Doctrine\ORM\Mapping as ORM;
         requirements: ['id' => '\d+'],
     ),
 ])]
-#[ApiFilter(AmountFilter::class, properties: ['amount'])]
+#[ApiFilter(StockFilter::class, properties: ['stock'])]
 class Product
 {
     #[ORM\Id]
