@@ -13,6 +13,7 @@ use ApiPlatform\Metadata\Put;
 use App\Filter\StockFilter;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 #[ApiResource(operations: [
@@ -43,6 +44,7 @@ class Product
     private ?string $name = null;
 
     #[ORM\Column]
+    #[Assert\GreaterThanOrEqual(0)]
     private ?int $quantity = null;
 
     public function getId(): ?int
