@@ -31,7 +31,7 @@ use Doctrine\ORM\Mapping as ORM;
         requirements: ['id' => '\d+'],
     ),
 ])]
-#[ApiFilter(StockFilter::class, properties: ['stock'])]
+#[ApiFilter(StockFilter::class, properties: ['columnName' => 'quantity'])]
 class Product
 {
     #[ORM\Id]
@@ -43,7 +43,7 @@ class Product
     private ?string $name = null;
 
     #[ORM\Column]
-    private ?int $amount = null;
+    private ?int $quantity = null;
 
     public function getId(): ?int
     {
@@ -62,14 +62,14 @@ class Product
         return $this;
     }
 
-    public function getAmount(): ?int
+    public function getQuantity(): ?int
     {
-        return $this->amount;
+        return $this->quantity;
     }
 
-    public function setAmount(int $amount): self
+    public function setQuantity(int $quantity): self
     {
-        $this->amount = $amount;
+        $this->quantity = $quantity;
 
         return $this;
     }

@@ -11,6 +11,7 @@ use Symfony\Component\PropertyInfo\Type;
 class StockFilter extends AbstractFilter
 {
     private const PROPERTY_NAME = 'stock';
+    private const AVAILABLE_VALUES = ['true', 'false', '5'];
 
     /**
      * @param mixed $value
@@ -27,19 +28,18 @@ class StockFilter extends AbstractFilter
         if (self::PROPERTY_NAME !== $property) {
             return;
         }
-        if (
-            !$this->isPropertyEnabled($property, $resourceClass)
-        ) {
-            return;
-        }
+
         if (!is_scalar($value) && !(\is_object($value) && method_exists($value, '__toString'))) {
             return;
         }
         $value = (string) $value;
-        if (!in_array($value, ['true', 'false', '5'])) {
+        if (!in_array($value, self::AVAILABLE_VALUES)) {
             return;
         }
-        $columnName = 'amount';
+        if (empty($this->properties['columnName'])) {
+            return;
+        }
+        $columnName = (string) $this->properties['columnName'];
         $parameterName = $queryNameGenerator->generateParameterName($property);
         $rootAlias = $queryBuilder->getRootAliases()[0];
         if ('true' === $value) {
@@ -63,27 +63,19 @@ class StockFilter extends AbstractFilter
 
     public function getDescription(string $resourceClass): array
     {
-        if (!$this->properties) {
-            return [];
-        }
-
-        $description = [];
-        /**
-         * @var null $_strategy unused value
-         */
-        foreach ($this->properties as $property => $_strategy) {
-            $description[$property] = [
-                'property' => $property,
+        $description = [
+            self::PROPERTY_NAME => [
+                'property' => self::PROPERTY_NAME,
                 'type' => Type::BUILTIN_TYPE_STRING,
                 'required' => false,
-                'description' => 'Filter amount. Available value: true, false, 5. Empty value is allowed.',
+                'description' => sprintf('Available value: <i>(empty)</i>, %s.', implode(', ', self::AVAILABLE_VALUES)),
                 'openapi' => [
                     'allowReserved' => false,
                     'allowEmptyValue' => true,
                     'explode' => false,
                 ],
-            ];
-        }
+            ],
+        ];
 
         return $description;
     }
