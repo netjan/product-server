@@ -3,8 +3,8 @@
 namespace App\Tests\Entity;
 
 use App\Entity\Product;
-use PHPUnit\Framework\TestCase;
 use Doctrine\ORM\Mapping as ORM;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class ProductTest extends TestCase

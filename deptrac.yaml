@@ -17,11 +17,11 @@ parameters:
                     type: className
                     regex: ^App\\Entity\\
         -
-            name: Repository
+            name: Filter
             collectors:
                 -
                     type: className
-                    regex: .*Repository.*
+                    regex: ^App\\Filter\\
         - 
             name: Vendors
             collectors:
@@ -34,13 +34,18 @@ parameters:
                 - 
                     type: className
                     regex: ^Doctrine\\Persistence\\
+                - 
+                    type: className
+                    regex: ^Symfony\\Component\\
 
                     
 
     ruleset:
         Controller:
         Entity:
-            - Repository
+            - Filter
+            - Vendors
+        Filter:
             - Vendors
         Repository:
             - Entity

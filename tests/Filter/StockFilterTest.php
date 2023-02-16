@@ -62,14 +62,14 @@ class StockFilterTest extends KernelTestCase
     {
         return [
             'string ("")' => [
-                ['columnName' => 'quantity',],
+                ['columnName' => 'quantity'],
                 [],
                 'SELECT o FROM App\Entity\Product o',
                 null,
                 $this->alias,
             ],
             'string ("true")' => [
-                ['columnName' => 'quantity',],
+                ['columnName' => 'quantity'],
                 [
                     'stock' => 'true',
                 ],
@@ -78,7 +78,7 @@ class StockFilterTest extends KernelTestCase
                 $this->alias,
             ],
             'string ("false")' => [
-                ['columnName' => 'quantity',],
+                ['columnName' => 'quantity'],
                 [
                     'stock' => 'false',
                 ],
@@ -87,7 +87,7 @@ class StockFilterTest extends KernelTestCase
                 $this->alias,
             ],
             'string ("5")' => [
-                ['columnName' => 'quantity',],
+                ['columnName' => 'quantity'],
                 [
                     'stock' => '5',
                 ],
@@ -98,7 +98,7 @@ class StockFilterTest extends KernelTestCase
                 $this->alias,
             ],
             'wrong property name' => [
-                ['columnName' => 'quantity',],
+                ['columnName' => 'quantity'],
                 [
                     'wrong_property_name' => '5',
                 ],
@@ -107,7 +107,7 @@ class StockFilterTest extends KernelTestCase
                 $this->alias,
             ],
             'value not string' => [
-                ['columnName' => 'quantity',],
+                ['columnName' => 'quantity'],
                 [
                     'stock' => [],
                 ],
@@ -116,7 +116,7 @@ class StockFilterTest extends KernelTestCase
                 $this->alias,
             ],
             'value not valid' => [
-                ['columnName' => 'quantity',],
+                ['columnName' => 'quantity'],
                 [
                     'stock' => 'not valid value',
                 ],
@@ -125,7 +125,7 @@ class StockFilterTest extends KernelTestCase
                 $this->alias,
             ],
             'empty columnName' => [
-                ['columnName' => '',],
+                ['columnName' => ''],
                 [
                     'stock' => 'true',
                 ],
