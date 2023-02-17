@@ -40,6 +40,12 @@ php:
 install:
 	@$(DC) build
 	@$(MAKE) start -s
+	@$(MAKE) vendor -s
+	@$(MAKE) db-reset -s
+
+## Install composer dependencies
+vendor:
+	@$(COMPOSER) install
 
 ## Start the project
 start:
@@ -51,6 +57,23 @@ stop:
 	@$(DC) rm -v --force
 
 .PHONY: php install start stop
+
+#################################
+Database:
+
+## Create/Recreate the database
+db-create:
+	@$(EXEC) bin/console doctrine:database:drop --force -nq
+	@$(EXEC) bin/console doctrine:database:create -nq
+
+## Update database schema
+db-update:
+	@$(EXEC) bin/console doctrine:schema:update --force -nq
+
+## Reset database
+db-reset: db-create db-update
+
+.PHONY: db-create db-update db-reset
 
 #################################
 Tests:
@@ -84,3 +107,9 @@ fix-cs:
 	@$(EXEC) vendor/bin/php-cs-fixer fix
 
 .PHONY: fix-cs
+
+## Generate a self-signed SSL certificate using OpenSSL
+certificate:
+	openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ./docker/nginx/server.key -out ./docker/nginx/server.crt
+
+.PHONY: certificate

@@ -20,9 +20,6 @@ services:
       target: app_nginx
     hostname: product-server
     restart: unless-stopped
-    ports:
-      - "8001:80"
-      - "8002:443"
     volumes:
       - php_socket:/var/run/php
 

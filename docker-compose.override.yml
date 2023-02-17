@@ -25,6 +25,9 @@ services:
       XDEBUG_CONFIG: "${XDEBUG_CONFIG:-}"
 
   web:
+    ports:
+      - "8001:80"
+      - "8002:443"
     volumes:
       - ./:/var/www/html
     networks:
