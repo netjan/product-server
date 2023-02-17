@@ -4,9 +4,13 @@ namespace App\Tests\Function;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use ApiPlatform\Symfony\Bundle\Test\Client;
+use App\Entity\Product;
+use Hautelook\AliceBundle\PhpUnit\RefreshDatabaseTrait;
 
 class ProductTest extends ApiTestCase
 {
+    use RefreshDatabaseTrait;
+
     private string $path = '/api/products';
 
     protected Client $client;
@@ -17,49 +21,143 @@ class ProductTest extends ApiTestCase
         $this->client->getKernelBrowser()->catchExceptions(false);
     }
 
-    public function testGet(): void
+    /**
+     * @dataProvider provideGetCollectionTestData
+     */
+    public function testGetCollection(string $query, int $expectedTotalItems): void
     {
-        $response = $this->client->request('GET', $this->path);
+        $this->client->request('GET', $this->path.$query);
 
         $this->assertResponseIsSuccessful();
-        $this->assertJsonContains(['@id' => '/api/products']);
+        $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
+
+        $this->assertJsonContains([
+            '@context' => '/api/contexts/Product',
+            '@id' => '/api/products',
+            '@type' => 'hydra:Collection',
+            'hydra:totalItems' => $expectedTotalItems,
+        ]);
     }
 
-    public function testPost(): void
+    public function provideGetCollectionTestData(): array
     {
+        return [
+            [
+                '',
+                100,
+            ],
+            [
+                '?stock=true',
+                90,
+            ],
+            [
+                '?stock=false',
+                10,
+            ],
+            [
+                '?stock=5',
+                50,
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider provideProductTestData
+     */
+    public function testCreateProduct(string $name, int $quantity): void
+    {
+        $this->client->disableReboot();
         $response = $this->client->request('POST', $this->path, [
             'json' => [
-                'name' => 'Cos tam',
-                'quantity' => 12,
+                'name' => $name,
+                'quantity' => $quantity,
             ],
         ]);
 
-        $this->assertResponseIsSuccessful();
+        $this->assertResponseStatusCodeSame(201);
+        $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
+        $this->assertJsonContains([
+            '@context' => '/api/contexts/Product',
+            '@type' => 'Product',
+            'name' => $name,
+            'quantity' => $quantity,
+        ]);
+        $this->assertMatchesRegularExpression('~^/api\/products\/\d+$~', $response->toArray()['@id']);
+        $this->assertMatchesResourceItemJsonSchema(Product::class);
+
+        $id = $response->toArray()['id'];
+        $response = $this->client->request('GET', $this->path.'/'.$id);
+        $this->assertResponseStatusCodeSame(200);
+        $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
+
+        $this->assertJsonContains([
+            '@context' => '/api/contexts/Product',
+            '@type' => 'Product',
+            'name' => $name,
+            'quantity' => $quantity,
+        ]);
     }
 
-    public function testGetItem(): void
+    public function provideProductTestData(): array
     {
-        $response = $this->client->request('GET', $this->path.'/2');
-
-        $this->assertResponseIsSuccessful();
+        return [
+            [
+                'Product name',
+                12,
+            ],
+        ];
     }
 
-    public function testPut(): void
+    public function testGetProduct(): void
     {
-        $response = $this->client->request('PUT', $this->path.'/2', [
+        $this->client->request('GET', $this->getIri());
+        $this->assertResponseStatusCodeSame(200);
+        $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
+
+        $this->assertJsonContains([
+            '@context' => '/api/contexts/Product',
+            '@type' => 'Product',
+            'name' => 'Dummy product name',
+            'quantity' => 100,
+        ]);
+    }
+
+    /**
+     * @dataProvider provideProductTestData
+     */
+    public function testUpdateProduct(string $name, int $quantity): void
+    {
+        $this->client->request('PUT', $this->getIri(), [
             'json' => [
-                'name' => 'asdf',
+                'name' => $name,
+                'quantity' => $quantity,
             ],
         ]);
 
-        $this->assertResponseIsSuccessful();
+        $this->assertResponseStatusCodeSame(200);
+        $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
+
+        $this->assertJsonContains([
+            '@context' => '/api/contexts/Product',
+            '@type' => 'Product',
+            'name' => $name,
+            'quantity' => $quantity,
+        ]);
     }
 
-    public function testDelete(): void
+    public function testDeleteProduct(): void
     {
-        $this->assertTrue(true);
-        // $response = $this->client->request('DELETE', $this->path.'/6');
+        $this->client->request('DELETE', $this->getIri());
 
-        // $this->assertResponseIsSuccessful();
+        $this->assertResponseStatusCodeSame(204);
+        $this->assertNull(
+            static::getContainer()->get('doctrine')->getRepository(Product::class)->findOneBy(['name' => 'Dummy product name'])
+        );
+    }
+
+    private function getIri(): string
+    {
+        // Product with name 'Dummy product name' has been generated by Alice when loading test fixtures.
+        return $this->findIriBy(Product::class, ['name' => 'Dummy product name']);
     }
 }

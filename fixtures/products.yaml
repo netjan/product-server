@@ -1,0 +1,13 @@
+App\Entity\Product:
+    product_{1..10}:
+        name: <name()>
+        quantity: 0
+    product_{11..50}:
+        name: <name()>
+        quantity: <numberBetween(1, 5)>
+    product_{51..99}:
+        name: <name()>
+        quantity: <numberBetween(6, 10)>
+    product_100:
+        name: 'Dummy product name'
+        quantity: 100
