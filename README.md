@@ -11,4 +11,4 @@ If you want to try to use and tweak that example, you can follow these steps:
 1. Visit https://localhost:8002/ and play with your app!
 
 ## Web application API client
-Web application API client uses data from that application. See details at page `https://github.com/netjan/product-client`.
+Web application API client uses data from that application. See details at page https://github.com/netjan/product-client.
