@@ -65,6 +65,7 @@ Database:
 db-create:
 	@$(EXEC) bin/console doctrine:database:drop --force -nq
 	@$(EXEC) bin/console doctrine:database:create -nq
+	@$(EXEC) sh -c "test -f var/data.db && chown www-data:www-data var/data.db"
 
 ## Update database schema
 db-update:
@@ -107,9 +108,3 @@ fix-cs:
 	@$(EXEC) vendor/bin/php-cs-fixer fix
 
 .PHONY: fix-cs
-
-## Generate a self-signed SSL certificate using OpenSSL
-certificate:
-	openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ./docker/nginx/server.key -out ./docker/nginx/server.crt
-
-.PHONY: certificate
